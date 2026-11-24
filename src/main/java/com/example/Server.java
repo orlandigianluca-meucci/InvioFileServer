@@ -34,7 +34,7 @@ public class Server {
             return;
         } 
 
-        if (! input.endsWith(".txt")) {
+        if (!input.endsWith(".txt") && !input.endsWith(".md") && !input.endsWith(".csv")) {
             out.println("ERR SYNTAX");
             return;
         }
@@ -46,14 +46,27 @@ public class Server {
             return;
         }
 
+        String[] estensioni = {".txt", ".md", ".csv"}; 
+
         System.out.println(input);
+
         File cartella = new File("documenti");
-        File file = new File(cartella, parti[1]);
+        
+        if (!parti[1].contains(".")) {
+    
+            File file = null;
 
+            for(String est : estensioni) {
+                File prova = new File(cartella, parti[1] + est);
+                if (prova.isFile()) {
+                    file = prova;
+                    break;
+                }
+            }
 
-        boolean presente = file.isFile();
+            boolean presente = file.isFile();
 
-        if (presente) {
+            if (presente) {
             try (BufferedReader lettoreFile = new BufferedReader(new FileReader(file))) {
                 out.println("OK FILE");
                 out.println(); // Riga vuota
@@ -65,6 +78,28 @@ public class Server {
             } catch (IOException e) {
                 out.println("ERR READ");
                 return;
+            }
+            }
+        }
+        else{
+            
+            File file = new File(cartella, parti[1]);
+            
+            boolean presente = file.isFile();
+
+             if (presente) {
+                try (BufferedReader lettoreFile = new BufferedReader(new FileReader(file))) {
+                    out.println("OK FILE");
+                    out.println(); // Riga vuota
+
+                    String riga;
+                    while ((riga = lettoreFile.readLine()) != null) {
+                        out.println(riga);
+                    }
+                } catch (IOException e) {
+                    out.println("ERR READ");
+                    return;
+                }
             }
         }
     }
